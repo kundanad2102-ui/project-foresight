@@ -45,3 +45,28 @@ Cancellation transactions will not be treated as fulfilled demand. Missing Custo
 
 - None.
 
+## Day 3 – Data Quality Decisions and Mapping
+
+### Completed
+
+- Created the formal data-quality decision table.
+- Documented the reason for retaining missing CustomerID records.
+- Documented the handling of cancellation transactions.
+- Defined source-to-target mappings for all required processed datasets.
+- Defined the grain of each processed table.
+- Validated product and inventory key uniqueness.
+- Estimated the number of daily SKU demand records after aggregation.
+
+### Next Tasks
+
+- Build the reproducible Python data pipeline.
+- Create sales_daily.csv.
+- Create sku_master.csv.
+- Create inventory_snapshots.csv.
+- Create calendar.csv.
+- Create analysis_ready.csv.
+
+### Blockers
+
+- No separate subcategory field exists, so category will temporarily be used as subcategory.
+- No external holiday calendar has been approved, so holiday flags will initially use a documented default.
