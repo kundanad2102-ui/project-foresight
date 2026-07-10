@@ -1,0 +1,37 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Secrets
+.env
+*.env
+
+# Raw and generated datasets
+data/raw/*
+data/processed/*
+
+# Keep folder structure
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Saved models
+models/*.pkl
+models/*.joblib
+
+# Logs
+*.log
+
+# Windows and macOS files
+Thumbs.db
+.DS_Store
+
+# IDE settings
+.vscode/
+.idea/
