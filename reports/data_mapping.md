@@ -57,7 +57,7 @@ Cancellation invoices and non-positive quantities will be excluded.
 | reorder_placed | ReorderPlaced |
 | stockout_flag | Stockout |
 | reorder_point | ReorderPoint |
-| safety_stock | SafetyStock |
+| safety_stock | Derived later from demand variability, lead time and service-level assumptions; it is not directly available in the raw data |
 
 ## 4. calendar.csv
 

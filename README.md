@@ -59,8 +59,10 @@ Businesses frequently face two inventory problems:
 - [x] Project folder created
 - [x] Python 3.11 virtual environment created
 - [x] Required packages installed
-- [ ] Raw datasets added
-- [ ] Data profiling completed
-- [ ] Data-cleaning pipeline completed
-- [ ] Analysis-ready dataset generated
-- [ ] Data-quality report completed
+- [x] Raw datasets added
+- [x] Data profiling completed
+- [x] Data-cleaning pipeline completed
+- [x] Processed datasets generated
+- [x] Analysis-ready dataset generated
+- [x] Data-quality decisions documented
+- [x] Source-to-target mapping documented

@@ -70,3 +70,38 @@ Cancellation transactions will not be treated as fulfilled demand. Missing Custo
 
 - No separate subcategory field exists, so category will temporarily be used as subcategory.
 - No external holiday calendar has been approved, so holiday flags will initially use a documented default.
+
+## Day 4 – Complete Data Pipeline
+
+### Completed
+
+- Built a reproducible Python data-processing pipeline.
+- Cleaned and validated sales transactions.
+- Excluded cancellation transactions from fulfilled demand.
+- Created sales_daily.csv with one row per date and SKU.
+- Created sku_master.csv with one row per SKU.
+- Created inventory_snapshots.csv with one row per date and SKU.
+- Created calendar.csv with one row per calendar date.
+- Created analysis_ready.csv by joining sales, inventory, product and calendar data.
+- Validated that all processed datasets contain no missing values.
+- Confirmed unique keys and consistent SKU coverage.
+
+### Output Summary
+
+- sales_daily.csv: 67,626 rows and 8 columns
+- sku_master.csv: 150 rows and 11 columns
+- inventory_snapshots.csv: 109,650 rows and 10 columns
+- calendar.csv: 731 rows and 12 columns
+- analysis_ready.csv: 109,650 rows and 41 columns
+
+### Next Tasks
+
+- Perform exploratory data analysis.
+- Study SKU demand patterns and seasonality.
+- Prepare weekly demand data.
+- Build and evaluate forecasting baselines.
+
+### Blockers
+
+- No approved holiday calendar is available, so is_holiday currently uses a documented default value.
+- No separate subcategory field exists, so category is temporarily reused as subcategory.
