@@ -105,3 +105,58 @@ Cancellation transactions will not be treated as fulfilled demand. Missing Custo
 
 - No approved holiday calendar is available, so is_holiday currently uses a documented default value.
 - No separate subcategory field exists, so category is temporarily reused as subcategory.
+
+## Week 2 – EDA Completed
+
+### Completed
+
+- Validated all Week 1 processed datasets.
+- Reconciled the forecasting target.
+- Confirmed demand_target equals units sold plus lost sales.
+- Analysed demand distribution and zero-demand records.
+- Analysed daily, weekly, monthly and yearly patterns.
+- Identified top-moving and slow-moving SKUs.
+- Analysed demand concentration.
+- Analysed category performance.
+- Identified stockout-risk SKUs.
+- Analysed lost sales and stockout impact.
+- Measured SKU-level intermittency and demand variability.
+- Completed the EDA insight memo.
+
+### Key Decisions
+
+- Use demand_target as the forecasting target.
+- Use WAPE as the primary forecasting metric.
+- Do not use MAPE as the primary metric because many records contain zero demand.
+- Prepare weekly SKU-level demand for baseline forecasting.
+
+### Next Task
+
+- Create weekly_demand.csv.
+- Build seasonal-naive forecasting baseline.
+
+## Week 2 – Baseline Forecasting Completed
+
+### Completed
+
+- Created weekly SKU-level demand data.
+- Generated 15,900 SKU-week records for 150 SKUs.
+- Created leakage-safe lag and rolling features.
+- Used the final 13 complete weeks as a time-based test set.
+- Evaluated previous-week and 52-week seasonal-naive baselines.
+- Used WAPE, MAE, RMSE and bias for evaluation.
+- Selected the previous-week naive model as the baseline.
+- Saved baseline predictions and metrics.
+
+### Baseline Result
+
+- Selected model: Naive – Previous Week
+- WAPE: 47.88%
+- MAE: 69.08
+- RMSE: 121.54
+- Bias: -1.05%
+- Evaluation rows: 1,950
+
+### Week 3 Goal
+
+Develop forecasting models that achieve a lower WAPE than 47.88%.

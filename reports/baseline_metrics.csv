@@ -1,0 +1,3 @@
+model,wape_percent,mae,rmse,bias_percent,actual_total,forecast_total,evaluation_rows,rank,selected_baseline
+Naive – Previous Week,47.879804650567635,69.08,121.53976662720261,-1.046413262150692,281342.0,278398.0,1950,1,True
+Seasonal Naive – 52 Weeks,53.296343951489646,76.89487179487179,143.16029208816678,0.2271257046583873,281342.0,281981.0,1950,2,False
