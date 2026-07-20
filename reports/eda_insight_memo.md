@@ -115,6 +115,23 @@ SKU-level variability results:
 
 Most SKUs therefore have volatile or intermittent demand.
 
+## Dead-Stock Analysis
+
+Dead stock was defined as a SKU that had:
+
+- Positive ending on-hand inventory, and
+- Zero estimated demand during the latest 13 weeks
+
+The analysis covered the period from 1 October 2024 to 31 December 2024.
+
+Results:
+
+- Dead-stock SKUs: 0
+- Dead-stock units: 0
+- Capital tied up in dead stock: 0.00
+
+No SKU met the defined dead-stock conditions. Although several products were slow-moving or intermittent, every SKU with positive ending inventory recorded some demand during the latest 13 weeks.
+
 ## Category Performance
 
 Apparel generated the highest demand at 369,475 units.
@@ -135,6 +152,33 @@ Other high lost-sales rates included:
 - Home Decor: 8.15%
 
 Home Decor recorded the highest number of stockout days at 726.
+
+## Demand Driver and Correlation Analysis
+
+Spearman correlation was used because demand is highly skewed and contains many zero observations.
+
+The strongest correlations with estimated demand were:
+
+| Driver | Spearman Correlation |
+|---|---:|
+| Inventory position | 0.4753 |
+| On-order units | 0.4746 |
+| Promotion flag | 0.4095 |
+| Reorder point | 0.4017 |
+| Lost sales | 0.1767 |
+| Stockout flag | 0.1746 |
+| On-hand units | 0.1669 |
+| Effective unit price | 0.0488 |
+
+Inventory position, incoming inventory and reorder points were positively associated with demand. This may partly reflect inventory-planning decisions because higher-demand products are normally assigned more stock and higher reorder levels.
+
+Promotional observations also had a moderate positive association with demand, supporting the use of promotion information in forecasting.
+
+Stockouts and lost sales were positively associated with demand because high-demand periods were more likely to exhaust available inventory.
+
+Effective unit price showed only a very weak monotonic relationship with demand.
+
+These results are descriptive associations and do not establish causal relationships. Current-week stockouts and lost sales are used only for exploratory analysis and are excluded from forecasting inputs to prevent data leakage.
 
 ## Stockouts and Lost Sales
 
@@ -166,6 +210,18 @@ Stockout frequency and lost-sales volume must both be considered in future inven
 4. Beauty, Toys and Stationery have relatively high lost-sales rates despite having lower total demand than Apparel. Category-level inventory policies should therefore not be based only on sales volume.
 
 5. Weekend demand is lower than weekday demand, while Tuesday and Thursday are the strongest demand days. This pattern may support day-of-week features in forecasting models.
+
+## Promotion Analysis
+
+Average date-SKU demand was substantially higher during promotional observations:
+
+- Average demand during promotions: 61.01 units
+- Average demand without promotions: 8.22 units
+- Observed difference: 642.12%
+
+Promotional records were associated with considerably higher demand and should therefore be included as a forecasting feature.
+
+This comparison is observational. It does not prove that promotions caused the entire increase because promotions may have been scheduled for high-demand products or peak-demand periods.
 
 ## Limitations
 

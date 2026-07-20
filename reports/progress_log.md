@@ -1,5 +1,7 @@
 # Project FORESIGHT Progress Log
 
+## Week 1
+
 ## Day 1 – Project Setup
 
 ### Completed
@@ -112,28 +114,69 @@ Cancellation transactions will not be treated as fulfilled demand. Missing Custo
 
 - Validated all Week 1 processed datasets.
 - Reconciled the forecasting target.
-- Confirmed demand_target equals units sold plus lost sales.
+- Confirmed that `demand_target` equals inventory units sold plus lost sales.
 - Analysed demand distribution and zero-demand records.
-- Analysed daily, weekly, monthly and yearly patterns.
+- Analysed daily, weekly, monthly and yearly demand patterns.
 - Identified top-moving and slow-moving SKUs.
-- Analysed demand concentration.
-- Analysed category performance.
+- Analysed demand concentration across products.
+- Analysed category-level demand and lost-sales performance.
 - Identified stockout-risk SKUs.
 - Analysed lost sales and stockout impact.
 - Measured SKU-level intermittency and demand variability.
+- Completed promotion-demand analysis.
+- Compared promotional and non-promotional demand observations.
+- Completed explicit 13-week dead-stock analysis.
+- Completed Spearman demand-driver correlation analysis.
 - Completed the EDA insight memo.
+
+### Promotion Analysis
+
+- Average demand during promotional observations: 61.01 units.
+- Average demand during non-promotional observations: 8.22 units.
+- Observed promotion-demand difference: 642.12%.
+- The promotion result is treated as an observed association and not proof that promotions caused the full increase.
+- Promotion information will be retained as a forecasting feature.
+
+### Dead-Stock Analysis
+
+Dead stock was defined as positive ending inventory with zero estimated demand during the latest 13 weeks.
+
+- Analysis period: 1 October 2024 to 31 December 2024.
+- Dead-stock SKUs: 0.
+- Dead-stock units: 0.
+- Capital tied up in dead stock: 0.00.
+
+No SKU met the defined dead-stock conditions. Slow-moving and intermittent SKUs were present, but every SKU with positive ending inventory recorded some demand during the latest 13 weeks.
+
+### Demand-Driver Analysis
+
+Spearman correlation was used because demand is highly skewed and contains many zero observations.
+
+The strongest observed correlations with demand were:
+
+- Inventory position: 0.4753
+- On-order units: 0.4746
+- Promotion flag: 0.4095
+- Reorder point: 0.4017
+- Lost sales: 0.1767
+- Stockout flag: 0.1746
+- On-hand units: 0.1669
+- Effective unit price: 0.0488
+
+Inventory position, on-order units, promotion status and reorder point had the strongest positive associations with demand.
+
+Current-week stockout and lost-sales variables are used only for exploratory analysis and are excluded from forecasting inputs to prevent data leakage.
 
 ### Key Decisions
 
-- Use demand_target as the forecasting target.
+- Use `demand_target` as the forecasting target.
 - Use WAPE as the primary forecasting metric.
+- Use MAE, RMSE and forecast bias as secondary evaluation metrics.
 - Do not use MAPE as the primary metric because many records contain zero demand.
-- Prepare weekly SKU-level demand for baseline forecasting.
-
-### Next Task
-
-- Create weekly_demand.csv.
-- Build seasonal-naive forecasting baseline.
+- Aggregate demand at weekly SKU level for forecasting.
+- Use leakage-safe lag and rolling features.
+- Include promotion and calendar information as forecasting features.
+- Treat correlation and promotion findings as descriptive associations rather than causal conclusions.
 
 ## Week 2 – Baseline Forecasting Completed
 
@@ -141,21 +184,30 @@ Cancellation transactions will not be treated as fulfilled demand. Missing Custo
 
 - Created weekly SKU-level demand data.
 - Generated 15,900 SKU-week records for 150 SKUs.
-- Created leakage-safe lag and rolling features.
-- Used the final 13 complete weeks as a time-based test set.
-- Evaluated previous-week and 52-week seasonal-naive baselines.
-- Used WAPE, MAE, RMSE and bias for evaluation.
-- Selected the previous-week naive model as the baseline.
-- Saved baseline predictions and metrics.
+- Identified 104 complete weeks and excluded partial weeks from evaluation.
+- Created leakage-safe demand-lag features.
+- Created leakage-safe rolling means, rolling standard deviations and zero-demand-rate features.
+- Used the final 13 complete weeks as a chronological test period.
+- Evaluated the required 52-week seasonal-naive baseline.
+- Evaluated the previous-week naive model as an additional operational benchmark.
+- Used WAPE, MAE, RMSE and forecast bias for evaluation.
+- Saved baseline predictions and evaluation metrics.
 
-### Baseline Result
+### Baseline Results
 
-- Selected model: Naive – Previous Week
-- WAPE: 47.88%
-- MAE: 69.08
-- RMSE: 121.54
-- Bias: -1.05%
-- Evaluation rows: 1,950
+| Model | WAPE | MAE | RMSE | Bias |
+|---|---:|---:|---:|---:|
+| Naive – Previous Week | 47.88% | 69.08 | 121.54 | -1.05% |
+| Seasonal Naive – 52 Weeks | 53.30% | 76.89 | 143.16 | +0.23% |
+
+### Baseline Decision
+
+- The 52-week seasonal-naive model was retained as the baseline required by the Project FORESIGHT specification.
+- The previous-week naive model achieved better performance and was retained as the stronger operational benchmark.
+- Evaluation rows: 1,950.
+- Evaluation weeks: 13.
+- Evaluation SKUs: 150.
+- More advanced forecasting models were required to improve on both naive approaches.
 
 ### Week 3 Goal
 
