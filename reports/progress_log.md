@@ -253,6 +253,25 @@ Develop forecasting models that achieve a lower WAPE than 47.88%.
 - Improvement over previous-week naive: 6.58 percentage points.
 - Saved fold-level metrics, summary metrics and validation report.
 
+### Inventory Risk Scoring
+
+- Created SKU-level stockout and overstock risk scoring.
+- Used an 8-week operational planning horizon.
+- Combined forecast demand, on-hand inventory, on-order inventory, supplier lead time, demand variability and safety stock.
+- Classified stockout and overstock exposure into High, Medium and Low risk levels.
+- Scored 150 SKUs.
+- Identified 9 high stockout-risk SKUs.
+- Identified 93 medium stockout-risk SKUs.
+- Identified 3 high overstock-risk SKUs.
+- Identified 8 medium overstock-risk SKUs.
+- Estimated a forecast stockout gap of 15,220.67 units.
+- Estimated potential lost revenue of 793,250.16.
+- Identified 250.48 excess inventory units with a value of 6,347.14.
+- Recommended replenishment of 40,550 units.
+- Estimated recommended replenishment cost of 1,128,180.40.
+- Generated SKU-level recommended actions and priority rankings.
+- Saved detailed risk scores, an executive summary and a Markdown report.
+
 ### Week 4 Goal
 
 Convert forecast outputs into stockout-risk, overstock-risk, reorder and inventory-action recommendations, and build the Streamlit dashboard.

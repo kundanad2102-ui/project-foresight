@@ -170,3 +170,50 @@ HistGradientBoosting achieved the best rolling-origin WAPE and was retained as t
 It improved WAPE by 6.58 percentage points compared with the previous-week naive benchmark and by 29.88 percentage points compared with the 52-week seasonal-naive baseline.
 
 The consistency of performance across the four folds provides stronger evidence of model stability than a single validation split.
+
+## Inventory Risk Scoring
+
+Forecast outputs were converted into SKU-level stockout and overstock risk scores using inventory position, supplier lead time, forecast demand, demand variability and safety stock.
+
+### Scoring Method
+
+- Operational forecast horizon: 8 weeks
+- Inventory position: ending on-hand units plus ending on-order units
+- Lead-time demand was estimated using forecast weekly demand and supplier lead time.
+- Safety stock used recent demand variability and a service-level factor of 1.65.
+- Stockout risk was calculated when inventory position was below lead-time demand plus safety stock.
+- Overstock risk was calculated when inventory exceeded the 8-week forecast requirement plus safety stock.
+- Replenishment recommendations were rounded to the SKU minimum order quantity.
+
+### Risk Levels
+
+- High stockout risk: projected shortage score of 50% or more
+- Medium stockout risk: projected shortage exists but is below 50%
+- Low stockout risk: no projected lead-time shortage
+
+### Results
+
+| Metric | Result |
+|---|---:|
+| SKUs scored | 150 |
+| High stockout-risk SKUs | 9 |
+| Medium stockout-risk SKUs | 93 |
+| High overstock-risk SKUs | 3 |
+| Medium overstock-risk SKUs | 8 |
+| Forecast stockout gap | 15,220.67 units |
+| Potential lost revenue | 793,250.16 |
+| Excess inventory | 250.48 units |
+| Excess inventory value | 6,347.14 |
+| Recommended replenishment | 40,550 units |
+| Recommended replenishment cost | 1,128,180.40 |
+
+A total of 102 SKUs were identified with projected stockout exposure, consisting of 9 high-risk and 93 medium-risk SKUs.
+
+The scoring workflow also generated SKU-level recommended actions, including replenishment, supply expediting, inventory monitoring, replenishment reduction and overstock-transfer or promotion recommendations.
+
+### Limitation
+
+The current model-prediction file contains historical test-period forecasts rather than newly generated future forecasts. The latest available model predictions were therefore used as an operational demand proxy for demonstrating the risk-scoring framework.
+
+In deployment, the risk-scoring pipeline should use the latest generated 8-week future forecast during every scoring run.
+
