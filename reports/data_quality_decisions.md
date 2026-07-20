@@ -39,3 +39,43 @@
 - Dates will be converted using controlled datetime parsing.
 - Product identifiers will be standardised before joining tables.
 - Cleaning steps and removed-row counts will be printed by the pipeline.
+
+## Missing Raw Calendar Extract
+
+The Project FORESIGHT specification describes four source extracts:
+
+1. Sales data
+2. Product master data
+3. Inventory data
+4. Calendar data
+
+Only three raw files were available in the supplied project data:
+
+- `sales_transactions.csv`
+- `products_master.csv`
+- `inventory_daily.csv`
+
+No separate raw calendar CSV or Excel file was available in the project folder, Documents folder, or Downloads folder.
+
+To keep the pipeline reproducible, the calendar table was generated programmatically for every date between 1 January 2023 and 31 December 2024.
+
+The generated calendar includes:
+
+- Year
+- Month and month name
+- Quarter
+- ISO week
+- Day of week and day name
+- Weekend indicator
+- Season
+- Promotion-event indicator
+
+The promotion-event indicator was derived from the available sales promotion flag.
+
+Because no approved holiday-calendar source was supplied, `is_holiday` was set to `0`. This is a documented limitation and should be replaced with the official client calendar if one becomes available.
+
+The generated calendar is saved as:
+
+`data/processed/calendar.csv`
+
+This fallback avoids inventing unsupported holiday events while preserving a complete and reproducible analytical date dimension.

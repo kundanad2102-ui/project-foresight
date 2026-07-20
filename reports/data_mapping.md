@@ -96,3 +96,7 @@ This dataset will combine:
 - lead time
 - reorder point
 - safety stock
+
+## Calendar Source Note
+
+A separate raw calendar extract was not available. Therefore, `calendar.csv` is generated programmatically from the available sales and inventory date range. Promotion indicators are derived from sales data, while holiday indicators default to zero because no verified holiday source was supplied.
