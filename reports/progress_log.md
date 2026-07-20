@@ -160,3 +160,32 @@ Cancellation transactions will not be treated as fulfilled demand. Missing Custo
 ### Week 3 Goal
 
 Develop forecasting models that achieve a lower WAPE than 47.88%.
+
+## Week 3 — Forecast Modelling Completed
+
+### Completed
+
+- Prepared a leakage-safe global modelling dataset.
+- Created chronological training, validation and test periods.
+- Trained HistGradientBoosting and Random Forest models.
+- Selected the final model using validation WAPE.
+- Retrained the selected model using training and validation data.
+- Evaluated the final model on the untouched 13-week test period.
+- Compared the model against previous-week and seasonal-naive baselines.
+- Calculated permutation feature importance.
+- Completed SKU-level and weekly forecast-error analysis.
+- Saved the trained model, predictions, metrics and reports.
+
+### Final Model Result
+
+- Selected model: HistGradientBoosting
+- Final test WAPE: 39.51%
+- Previous-week baseline WAPE: 47.88%
+- Improvement: 8.37 percentage points
+- Final MAE: 57.01
+- Final RMSE: 96.10
+- Final bias: +2.94%
+
+### Week 4 Goal
+
+Convert forecast outputs into stockout-risk, overstock-risk, reorder and inventory-action recommendations, and build the Streamlit dashboard.

@@ -1,0 +1,30 @@
+feature,importance_mean,importance_std,importance_rank,importance_interpretation
+demand_rolling_mean_4,16.838765516893517,0.9164707032298627,1,Useful feature
+demand_rolling_mean_8,15.871795332473843,0.8954477541512579,2,Useful feature
+demand_rolling_mean_13,12.756008663822692,0.6928838929099369,3,Useful feature
+ending_on_order_units_lag_1,4.198238515128106,0.028902165335252323,4,Useful feature
+demand_rolling_std_8,0.9596529410945133,0.192962002520212,5,Useful feature
+demand_rolling_std_13,0.5997820116966205,0.09777710691352284,6,Useful feature
+demand_lag_1,0.5761259935327558,0.12738493517427169,7,Useful feature
+ending_on_hand_units_lag_1,0.4870336331595008,0.1350765998790465,8,Useful feature
+demand_lag_52,0.26665335813592134,0.125272968559168,9,Useful feature
+demand_rolling_std_4,0.2572808700613578,0.1191726440087097,10,Useful feature
+sku_id,0.09534824458361868,0.09809936167272472,11,Useful feature
+demand_lag_26,0.04752767309246527,0.06990585979016127,12,Useful feature
+iso_year,0.0,0.0,13,Little or negative contribution
+month,0.0,0.0,14,Little or negative contribution
+quarter,0.0,0.0,15,Little or negative contribution
+month_cos,-0.001272603336448223,0.0018370552546006372,16,Little or negative contribution
+zero_demand_rate_4,-0.003963289536424479,0.10532108575846104,17,Little or negative contribution
+stockout_days_lag_1,-0.012352192945118171,0.04446356654050738,18,Little or negative contribution
+iso_week_sin,-0.012923817189898065,0.004963323136472888,19,Little or negative contribution
+iso_week_cos,-0.014432949181710342,0.0014370726411254973,20,Little or negative contribution
+promo_week_flag_lag_1,-0.027211305303379636,0.01384275130949049,21,Little or negative contribution
+demand_lag_13,-0.040920893976732486,0.05925527183651531,22,Little or negative contribution
+lost_sales_lag_1,-0.06263015394779596,0.059495174062464636,23,Little or negative contribution
+iso_week,-0.1659064829218219,0.1642167516608772,24,Little or negative contribution
+month_sin,-0.23666215961243844,0.0477766382410016,25,Little or negative contribution
+demand_lag_4,-0.47211054828259097,0.3201570600516543,26,Little or negative contribution
+promo_week_flag,-0.5049731283908727,0.17791064609936566,27,Little or negative contribution
+demand_lag_2,-0.719729009158506,0.12371640153424808,28,Little or negative contribution
+demand_lag_8,-0.7796808945378473,0.03547289132987697,29,Little or negative contribution
