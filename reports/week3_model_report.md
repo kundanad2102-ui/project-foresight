@@ -143,3 +143,30 @@ The HistGradientBoosting model successfully outperformed both naive forecasting 
 The final WAPE decreased from 47.88% to 39.51%, demonstrating that the leakage-safe rolling demand, lag, calendar, promotion and inventory features improved forecast accuracy.
 
 The trained model and supporting analysis are suitable for use in Week 4, where forecasts will be converted into stockout-risk scores, overstock-risk scores, reorder recommendations and dashboard outputs.
+
+## Rolling-Origin Cross-Validation
+
+Rolling-origin cross-validation was completed using four expanding-window folds.
+
+### Validation Design
+
+- Number of folds: 4
+- Forecast horizon per fold: 8 weeks
+- Minimum training history: 52 weeks
+- Validation method: expanding historical training window
+- Final 13-week test period remained untouched
+
+### Results
+
+| Model | WAPE | MAE | RMSE | Bias | Mean Fold WAPE |
+|---|---:|---:|---:|---:|---:|
+| HistGradientBoosting | 44.58% | 59.04 | 111.78 | +2.27% | 44.60% |
+| Random Forest | 45.19% | 59.86 | 102.83 | +9.21% | 45.26% |
+| Naive – Previous Week | 51.16% | 67.76 | 126.52 | -0.47% | 51.19% |
+| Seasonal Naive – 52 Weeks | 74.45% | 98.62 | 239.96 | -63.76% | 74.04% |
+
+HistGradientBoosting achieved the best rolling-origin WAPE and was retained as the selected forecasting model.
+
+It improved WAPE by 6.58 percentage points compared with the previous-week naive benchmark and by 29.88 percentage points compared with the 52-week seasonal-naive baseline.
+
+The consistency of performance across the four folds provides stronger evidence of model stability than a single validation split.

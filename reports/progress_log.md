@@ -238,6 +238,21 @@ Develop forecasting models that achieve a lower WAPE than 47.88%.
 - Final RMSE: 96.10
 - Final bias: +2.94%
 
+### Rolling-Origin Cross-Validation
+
+- Added expanding-window rolling-origin cross-validation.
+- Used 4 validation folds.
+- Used an 8-week forecast horizon per fold.
+- Required at least 52 weeks of training history.
+- Kept the final 13-week test period untouched.
+- Compared HistGradientBoosting, Random Forest, previous-week naive and 52-week seasonal-naive models.
+- Selected HistGradientBoosting based on rolling-CV WAPE.
+- HistGradientBoosting rolling-CV WAPE: 44.58%.
+- Previous-week naive rolling-CV WAPE: 51.16%.
+- Seasonal-naive rolling-CV WAPE: 74.45%.
+- Improvement over previous-week naive: 6.58 percentage points.
+- Saved fold-level metrics, summary metrics and validation report.
+
 ### Week 4 Goal
 
 Convert forecast outputs into stockout-risk, overstock-risk, reorder and inventory-action recommendations, and build the Streamlit dashboard.
