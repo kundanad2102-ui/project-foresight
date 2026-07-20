@@ -274,4 +274,17 @@ Develop forecasting models that achieve a lower WAPE than 47.88%.
 
 ### Week 4 Goal
 
-Convert forecast outputs into stockout-risk, overstock-risk, reorder and inventory-action recommendations, and build the Streamlit dashboard.
+Build the Streamlit decision dashboard using the completed forecast and inventory-risk outputs.
+
+The dashboard will include:
+
+- Executive KPI summary
+- SKU-level forecast performance
+- Stockout-risk priorities
+- Overstock-risk priorities
+- Replenishment recommendations
+- Potential lost revenue
+- Excess inventory value
+- SKU filtering and downloadable results
+- Model and data limitations
+- Deployment-ready scoring workflow
