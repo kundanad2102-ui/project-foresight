@@ -51,7 +51,7 @@ Project FORESIGHT converts historical sales, product, inventory, promotion and c
 | Week 3 – Forecast Modelling and Risk Scoring | Completed |
 | Week 4 – Streamlit Dashboard and Deployment | Completed |
 | Streamlit Community Cloud Deployment | Completed |
-| FastAPI Scoring-Service Deployment | Planned |
+| FastAPI Scoring-Service Deployment | Completed |
 
 ---
 
@@ -547,3 +547,31 @@ Project FORESIGHT demonstrates an end-to-end machine-learning workflow that conv
 - Financial-impact estimates
 - SKU-level inventory recommendations
 - An interactive deployed decision dashboard
+
+## FastAPI Scoring Service
+
+Project FORESIGHT includes a deployed FastAPI service for forecast retrieval, inventory-risk intelligence and SKU-level scoring.
+
+### Live API
+
+[Open Project FORESIGHT Scoring API](https://project-foresight-api.onrender.com/)
+
+### Interactive API Documentation
+
+[Open Swagger Documentation](https://project-foresight-api.onrender.com/docs)
+
+### Health Check
+
+[Check API Health](https://project-foresight-api.onrender.com/health)
+
+### Available Endpoints
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/health` | Check API and project-output availability |
+| GET | `/summary` | Return the executive risk summary |
+| GET | `/skus` | Search and list scored SKUs |
+| GET | `/forecast/{sku_id}` | Return the true 8-week SKU forecast |
+| GET | `/score/{sku_id}` | Return saved risk intelligence for a SKU |
+| POST | `/score` | Recalculate risk using inventory overrides |
+| GET | `/top-risks` | Return highest-priority inventory risks |
