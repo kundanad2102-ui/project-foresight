@@ -312,3 +312,11 @@ Develop forecasting models that achieve a lower WAPE than 47.88%.
 
 ```text
 app/dashboard.py
+
+### Deployment
+
+- Deployed the Streamlit dashboard on Streamlit Community Cloud.
+- Connected the deployed application to the GitHub repository.
+- Included the required forecast, model-metric and inventory-risk output files.
+- Verified that all dashboard tabs, filters, charts, tables and downloads work in the deployed application.
+- Live dashboard: https://project-foresight-szbpqvrcxp8x6sbrf8qmzx.streamlit.app/
