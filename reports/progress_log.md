@@ -272,19 +272,43 @@ Develop forecasting models that achieve a lower WAPE than 47.88%.
 - Generated SKU-level recommended actions and priority rankings.
 - Saved detailed risk scores, an executive summary and a Markdown report.
 
-### Week 4 Goal
+## Week 4 – Streamlit Dashboard Completed
 
-Build the Streamlit decision dashboard using the completed forecast and inventory-risk outputs.
+### Completed
 
-The dashboard will include:
+- Created the Streamlit decision-intelligence dashboard.
+- Connected the dashboard to forecast, model-performance and inventory-risk outputs.
+- Added category, supplier, stockout-risk and overstock-risk filters.
+- Added an adjustable priority-rank filter.
+- Added downloadable filtered risk data.
+- Added an Executive Overview with business KPIs.
+- Displayed 150 scored SKUs.
+- Displayed 9 high stockout-risk SKUs.
+- Displayed 93 medium stockout-risk SKUs.
+- Displayed 3 high overstock-risk SKUs.
+- Displayed 8 medium overstock-risk SKUs.
+- Added stockout-risk and overstock-risk distribution charts.
+- Added category-level value-exposure analysis.
+- Added stockout and overstock priority charts and tables.
+- Added downloadable stockout and overstock priority files.
+- Added final-test model-performance comparison.
+- Added rolling-origin cross-validation results.
+- Added weekly actual-demand versus forecast analysis.
+- Added an SKU Explorer with risk levels, demand forecast, recommended order quantity, value at stake and recommended action.
+- Added SKU-level forecast charts, WAPE and MAE.
+- Added forecasting methodology, inventory-risk logic, limitations and source-file documentation.
+- Prevented accidental zooming on the main risk-distribution charts.
+- Tested all five dashboard tabs successfully without Streamlit errors.
 
-- Executive KPI summary
-- SKU-level forecast performance
-- Stockout-risk priorities
-- Overstock-risk priorities
-- Replenishment recommendations
-- Potential lost revenue
-- Excess inventory value
-- SKU filtering and downloadable results
-- Model and data limitations
-- Deployment-ready scoring workflow
+### Dashboard Tabs
+
+- Executive Overview
+- Risk Priorities
+- Forecast Performance
+- SKU Explorer
+- Methodology
+
+### Dashboard Entry Point
+
+```text
+app/dashboard.py
