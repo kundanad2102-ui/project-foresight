@@ -34,4 +34,4 @@ Thumbs.db
 
 # IDE settings
 .vscode/
-.idea/
+.idea/src/risk_scoring_backup.py

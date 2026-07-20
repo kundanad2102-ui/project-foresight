@@ -24,11 +24,11 @@ SKU_MASTER_FILE = (
     / "sku_master.csv"
 )
 
-MODEL_PREDICTIONS_FILE = (
+FUTURE_FORECAST_FILE = (
     PROJECT_ROOT
     / "data"
     / "processed"
-    / "model_predictions.csv"
+    / "future_8_week_forecast.csv"
 )
 
 RISK_SCORES_FILE = (
@@ -56,7 +56,6 @@ RISK_REPORT_FILE = (
 # =========================================================
 
 FORECAST_HORIZON_WEEKS = 8
-FORECAST_SMOOTHING_WEEKS = 8
 REVIEW_PERIOD_WEEKS = 1
 SERVICE_LEVEL_Z = 1.65
 EPSILON = 1e-9
@@ -71,12 +70,12 @@ def load_inputs() -> tuple[
     pd.DataFrame,
     pd.DataFrame,
 ]:
-    """Load weekly demand, SKU master and model predictions."""
+    """Load weekly demand, SKU master and true future forecasts."""
 
     for filepath in [
         WEEKLY_DATA_FILE,
         SKU_MASTER_FILE,
-        MODEL_PREDICTIONS_FILE,
+        FUTURE_FORECAST_FILE,
     ]:
         if not filepath.exists():
             raise FileNotFoundError(
@@ -98,11 +97,10 @@ def load_inputs() -> tuple[
         ],
     )
 
-    predictions = pd.read_csv(
-        MODEL_PREDICTIONS_FILE,
+    future_forecast = pd.read_csv(
+        FUTURE_FORECAST_FILE,
         parse_dates=[
-            "week_start",
-            "week_end",
+            "forecast_week",
         ],
     )
 
@@ -130,26 +128,16 @@ def load_inputs() -> tuple[
         "minimum_order_quantity",
     }
 
-    prediction_required = {
+    forecast_required = {
         "sku_id",
-        "week_start",
-        "model_prediction",
-        "selected_model",
+        "forecast_week",
+        "forecast_demand",
     }
 
-    missing_weekly = (
-        weekly_required
-        - set(weekly.columns)
-    )
-
-    missing_sku = (
-        sku_required
-        - set(sku_master.columns)
-    )
-
-    missing_predictions = (
-        prediction_required
-        - set(predictions.columns)
+    missing_weekly = weekly_required - set(weekly.columns)
+    missing_sku = sku_required - set(sku_master.columns)
+    missing_forecast = forecast_required - set(
+        future_forecast.columns
     )
 
     if missing_weekly:
@@ -164,10 +152,47 @@ def load_inputs() -> tuple[
             f"{sorted(missing_sku)}"
         )
 
-    if missing_predictions:
+    if missing_forecast:
         raise ValueError(
-            "Missing prediction columns: "
-            f"{sorted(missing_predictions)}"
+            "Missing future-forecast columns: "
+            f"{sorted(missing_forecast)}"
+        )
+
+    weekly["sku_id"] = (
+        weekly["sku_id"]
+        .astype(str)
+        .str.strip()
+    )
+    sku_master["sku_id"] = (
+        sku_master["sku_id"]
+        .astype(str)
+        .str.strip()
+    )
+    future_forecast["sku_id"] = (
+        future_forecast["sku_id"]
+        .astype(str)
+        .str.strip()
+    )
+
+    future_forecast["forecast_demand"] = pd.to_numeric(
+        future_forecast["forecast_demand"],
+        errors="coerce",
+    )
+
+    if future_forecast["forecast_week"].isna().any():
+        raise ValueError(
+            "future_8_week_forecast.csv contains invalid forecast dates."
+        )
+
+    if future_forecast["forecast_demand"].isna().any():
+        raise ValueError(
+            "future_8_week_forecast.csv contains missing or "
+            "non-numeric forecast demand."
+        )
+
+    if future_forecast["forecast_demand"].lt(0).any():
+        raise ValueError(
+            "future_8_week_forecast.csv contains negative forecasts."
         )
 
     if weekly.duplicated(
@@ -185,20 +210,36 @@ def load_inputs() -> tuple[
             "Duplicate SKU rows found in sku_master.csv."
         )
 
-    if predictions.duplicated(
+    if future_forecast.duplicated(
         subset=[
             "sku_id",
-            "week_start",
+            "forecast_week",
         ]
     ).any():
         raise ValueError(
-            "Duplicate SKU-week rows found in model_predictions.csv."
+            "Duplicate SKU-week rows found in "
+            "future_8_week_forecast.csv."
+        )
+
+    weeks_per_sku = future_forecast.groupby("sku_id")[
+        "forecast_week"
+    ].nunique()
+
+    invalid_horizons = weeks_per_sku.loc[
+        ~weeks_per_sku.eq(FORECAST_HORIZON_WEEKS)
+    ]
+
+    if not invalid_horizons.empty:
+        raise ValueError(
+            "Every SKU must have exactly "
+            f"{FORECAST_HORIZON_WEEKS} future forecast weeks. "
+            f"Example invalid SKUs: {invalid_horizons.index[:10].tolist()}"
         )
 
     return (
         weekly,
         sku_master,
-        predictions,
+        future_forecast,
     )
 
 
@@ -209,7 +250,7 @@ def load_inputs() -> tuple[
 def build_scoring_base(
     weekly: pd.DataFrame,
     sku_master: pd.DataFrame,
-    predictions: pd.DataFrame,
+    future_forecast: pd.DataFrame,
 ) -> tuple[
     pd.DataFrame,
     pd.Timestamp,
@@ -219,91 +260,85 @@ def build_scoring_base(
     """
     Build one aligned risk-scoring row per SKU.
 
-    The latest week present in both complete weekly inventory data
-    and model predictions is used as the scoring date. The most recent
-    model predictions are averaged to create a stable weekly demand
-    forecast for operational risk scoring.
+    The latest complete inventory week is used as the scoring date.
+    The next eight genuine future forecast weeks are summarised for
+    inventory-risk and replenishment calculations.
     """
 
     complete_weekly = weekly.loc[
         weekly["is_complete_week"].eq(1)
     ].copy()
 
-    weekly_weeks = set(
-        complete_weekly["week_start"]
-        .dropna()
-        .unique()
-    )
-
-    prediction_weeks = set(
-        predictions["week_start"]
-        .dropna()
-        .unique()
-    )
-
-    common_weeks = sorted(
-        weekly_weeks
-        & prediction_weeks
-    )
-
-    if not common_weeks:
+    if complete_weekly.empty:
         raise ValueError(
-            "No common complete week exists between weekly demand "
-            "and model predictions."
+            "weekly_demand.csv contains no complete weeks."
         )
 
     scoring_week = pd.Timestamp(
-        common_weeks[-1]
+        complete_weekly["week_start"].max()
     )
 
-    recent_prediction_weeks = [
-        pd.Timestamp(week)
-        for week in common_weeks[
-            -FORECAST_SMOOTHING_WEEKS:
-        ]
-    ]
+    if future_forecast["forecast_week"].min() <= scoring_week:
+        raise ValueError(
+            "Future forecast weeks must occur after the latest "
+            f"complete scoring week ({scoring_week.date()})."
+        )
 
     forecast_start_week = pd.Timestamp(
-        recent_prediction_weeks[0]
+        future_forecast["forecast_week"].min()
     )
 
-    recent_predictions = predictions.loc[
-        predictions["week_start"].isin(
-            recent_prediction_weeks
+    forecast_end_week = pd.Timestamp(
+        future_forecast["forecast_week"].max()
+    )
+
+    if "selected_model" in future_forecast.columns:
+        selected_models = (
+            future_forecast["selected_model"]
+            .dropna()
+            .astype(str)
+            .unique()
+            .tolist()
         )
-    ].copy()
-
-    selected_models = (
-        recent_predictions[
-            "selected_model"
-        ]
-        .dropna()
-        .astype(str)
-        .unique()
-        .tolist()
-    )
+    else:
+        selected_models = []
 
     selected_model_name = (
         selected_models[0]
         if len(selected_models) == 1
-        else ", ".join(
-            sorted(selected_models)
+        else (
+            ", ".join(sorted(selected_models))
+            if selected_models
+            else "Future forecast model"
         )
     )
 
     forecast_summary = (
-        recent_predictions
+        future_forecast
+        .sort_values(["sku_id", "forecast_week"])
         .groupby(
             "sku_id",
             as_index=False,
         )
         .agg(
+            forecast_start_week=(
+                "forecast_week",
+                "min",
+            ),
+            forecast_end_week=(
+                "forecast_week",
+                "max",
+            ),
             weekly_forecast_demand=(
-                "model_prediction",
+                "forecast_demand",
                 "mean",
             ),
+            forecast_horizon_units=(
+                "forecast_demand",
+                "sum",
+            ),
             forecast_weeks_available=(
-                "week_start",
+                "forecast_week",
                 "nunique",
             ),
         )
@@ -311,11 +346,7 @@ def build_scoring_base(
 
     latest_inventory = (
         complete_weekly.loc[
-            complete_weekly[
-                "week_start"
-            ].eq(
-                scoring_week
-            ),
+            complete_weekly["week_start"].eq(scoring_week),
             [
                 "sku_id",
                 "week_start",
@@ -358,12 +389,25 @@ def build_scoring_base(
         )
     )
 
+    missing_forecast_skus = scoring.loc[
+        scoring["weekly_forecast_demand"].isna(),
+        "sku_id",
+    ].tolist()
+
+    if missing_forecast_skus:
+        raise ValueError(
+            "Future forecasts are missing for inventory SKUs. "
+            f"Example missing SKUs: {missing_forecast_skus[:10]}"
+        )
+
     required_numeric_columns = [
         "ending_on_hand_units",
         "ending_on_order_units",
         "average_reorder_point",
         "demand_rolling_std_13",
         "weekly_forecast_demand",
+        "forecast_horizon_units",
+        "forecast_weeks_available",
         "unit_cost",
         "list_price",
         "lead_time_days",
@@ -376,105 +420,85 @@ def build_scoring_base(
             errors="coerce",
         )
 
-    scoring[
-        "weekly_forecast_demand"
-    ] = (
-        scoring[
-            "weekly_forecast_demand"
-        ]
+    scoring["weekly_forecast_demand"] = (
+        scoring["weekly_forecast_demand"]
+        .fillna(scoring["demand"])
+        .clip(lower=0)
+    )
+
+    scoring["forecast_horizon_units"] = (
+        scoring["forecast_horizon_units"]
         .fillna(
-            scoring["demand"]
+            scoring["weekly_forecast_demand"]
+            * FORECAST_HORIZON_WEEKS
         )
-        .clip(
-            lower=0
-        )
+        .clip(lower=0)
     )
 
-    scoring[
-        "demand_rolling_std_13"
-    ] = (
-        scoring[
-            "demand_rolling_std_13"
-        ]
+    scoring["forecast_weeks_available"] = (
+        scoring["forecast_weeks_available"]
         .fillna(0)
-        .clip(
-            lower=0
-        )
+        .astype(int)
     )
 
-    scoring[
-        "ending_on_hand_units"
-    ] = (
-        scoring[
-            "ending_on_hand_units"
-        ]
+    scoring["demand_rolling_std_13"] = (
+        scoring["demand_rolling_std_13"]
         .fillna(0)
-        .clip(
-            lower=0
-        )
+        .clip(lower=0)
     )
 
-    scoring[
-        "ending_on_order_units"
-    ] = (
-        scoring[
-            "ending_on_order_units"
-        ]
+    scoring["ending_on_hand_units"] = (
+        scoring["ending_on_hand_units"]
         .fillna(0)
-        .clip(
-            lower=0
-        )
+        .clip(lower=0)
     )
 
-    scoring[
-        "average_reorder_point"
-    ] = (
-        scoring[
-            "average_reorder_point"
-        ]
+    scoring["ending_on_order_units"] = (
+        scoring["ending_on_order_units"]
         .fillna(0)
-        .clip(
-            lower=0
-        )
+        .clip(lower=0)
+    )
+
+    scoring["average_reorder_point"] = (
+        scoring["average_reorder_point"]
+        .fillna(0)
+        .clip(lower=0)
     )
 
     scoring["unit_cost"] = (
         scoring["unit_cost"]
         .fillna(0)
-        .clip(
-            lower=0
-        )
+        .clip(lower=0)
     )
 
     scoring["list_price"] = (
         scoring["list_price"]
-        .fillna(
-            scoring["unit_cost"]
-        )
-        .clip(
-            lower=0
-        )
+        .fillna(scoring["unit_cost"])
+        .clip(lower=0)
     )
 
     scoring["lead_time_days"] = (
         scoring["lead_time_days"]
         .fillna(7)
-        .clip(
-            lower=1
-        )
+        .clip(lower=1)
     )
 
-    scoring[
-        "minimum_order_quantity"
-    ] = (
-        scoring[
-            "minimum_order_quantity"
-        ]
+    scoring["minimum_order_quantity"] = (
+        scoring["minimum_order_quantity"]
         .fillna(1)
-        .clip(
-            lower=1
-        )
+        .clip(lower=1)
     )
+
+    if not scoring["forecast_weeks_available"].eq(
+        FORECAST_HORIZON_WEEKS
+    ).all():
+        raise ValueError(
+            "Every scored SKU must have exactly eight forecast weeks."
+        )
+
+    # Keep the exact overall window available for reports and dashboard use.
+    scoring["forecast_start_week"] = forecast_start_week
+    scoring["forecast_end_week"] = forecast_end_week
 
     return (
         scoring,
@@ -666,10 +690,15 @@ def calculate_risk_scores(
     )
 
     result["forecast_horizon_units"] = (
-        result[
-            "weekly_forecast_demand"
-        ]
-        * FORECAST_HORIZON_WEEKS
+        pd.to_numeric(
+            result["forecast_horizon_units"],
+            errors="coerce",
+        )
+        .fillna(
+            result["weekly_forecast_demand"]
+            * FORECAST_HORIZON_WEEKS
+        )
+        .clip(lower=0)
     )
 
     result["safety_stock_units"] = (
@@ -725,6 +754,7 @@ def calculate_risk_scores(
         lower=0,
         upper=100,
     )
+
 
     result["overstock_threshold_units"] = (
         result[
@@ -1157,12 +1187,12 @@ def write_report(
             f"{scoring_week.date()}"
         ),
         (
-            "- Forecast-output averaging window: "
+            "- True future forecast window: "
             f"{forecast_start_week.date()} to "
-            f"{scoring_week.date()}"
+            f"{(forecast_start_week + pd.Timedelta(weeks=7)).date()}"
         ),
         (
-            "- Forecast model represented in the prediction file: "
+            "- Forecast model used for future predictions: "
             f"{selected_model_name}"
         ),
         (
@@ -1305,19 +1335,23 @@ def write_report(
     report_lines.extend(
         [
             "",
-            "## Interpretation Limitation",
+            "## Forecast Assumptions and Limitations",
             "",
             (
-                "The available prediction file contains historical "
-                "test-period model outputs rather than a newly generated "
-                "future forecast. The latest eight available model "
-                "predictions are therefore averaged as an operational "
-                "weekly-demand proxy for this risk-scoring demonstration."
+                "Risk scoring uses a newly generated recursive 8-week future "
+                "forecast for every SKU. Each predicted week contributes to "
+                "the next week's lag and rolling-demand features."
             ),
             (
-                "The scoring framework is production-ready in structure, "
-                "but a live deployment should replace this proxy with "
-                "the current 8-week future forecast on every scoring run."
+                "No future promotion schedule was supplied, so future "
+                "promotion flags are assumed to be zero. Latest known "
+                "inventory inputs are carried forward for forecasting "
+                "features, while risk calculations use the latest actual "
+                "on-hand and on-order inventory position."
+            ),
+            (
+                "Forecast uncertainty intervals and service-level optimisation "
+                "are not yet included and remain production enhancements."
             ),
         ]
     )
@@ -1363,6 +1397,8 @@ def save_outputs(
         "supplier",
         "week_start",
         "week_end",
+        "forecast_start_week",
+        "forecast_end_week",
         "weekly_forecast_demand",
         "forecast_weeks_available",
         "lead_time_days",
@@ -1442,7 +1478,7 @@ def main() -> None:
     (
         weekly,
         sku_master,
-        predictions,
+        future_forecast,
     ) = load_inputs()
 
     (
@@ -1453,7 +1489,7 @@ def main() -> None:
     ) = build_scoring_base(
         weekly=weekly,
         sku_master=sku_master,
-        predictions=predictions,
+        future_forecast=future_forecast,
     )
 
     risk_scores = calculate_risk_scores(
@@ -1471,10 +1507,13 @@ def main() -> None:
         scoring_week.date(),
     )
     print(
-        "Forecast averaging window:",
+        "True future forecast window:",
         forecast_start_week.date(),
         "to",
-        scoring_week.date(),
+        (
+            forecast_start_week
+            + pd.Timedelta(weeks=7)
+        ).date(),
     )
     print(
         "SKUs scored:",
@@ -1526,4 +1565,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-    

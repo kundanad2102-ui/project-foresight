@@ -3,8 +3,8 @@
 ## Scoring Design
 
 - Scoring week: 2024-12-23
-- Forecast-output averaging window: 2024-11-04 to 2024-12-23
-- Forecast model represented in the prediction file: HistGradientBoosting
+- True future forecast window: 2024-12-30 to 2025-02-17
+- Forecast model used for future predictions: HistGradientBoosting
 - Operational forecast horizon: 8 weeks
 - Safety-stock service factor: 1.65
 - Inventory position: ending on-hand units plus ending on-order units
@@ -12,13 +12,13 @@
 ## Executive Summary
 
 - SKUs scored: 150
-- High stockout-risk SKUs: 9
-- Medium stockout-risk SKUs: 93
-- High overstock-risk SKUs: 3
+- High stockout-risk SKUs: 4
+- Medium stockout-risk SKUs: 82
+- High overstock-risk SKUs: 1
 - Medium overstock-risk SKUs: 8
-- Potential lost revenue: 793,250.16
-- Excess inventory value: 6,347.14
-- Recommended replenishment cost: 1,128,180.40
+- Potential lost revenue: 405,296.04
+- Excess inventory value: 5,029.76
+- Recommended replenishment cost: 556,031.40
 
 ## Risk Logic
 
@@ -30,33 +30,33 @@ Recommended order quantities replenish inventory to lead-time demand plus one re
 
 | Rank | SKU | Category | Stockout Risk | Gap Units | Potential Lost Revenue | Action |
 |---:|---|---|---:|---:|---:|---|
-| 1 | SKU10148 | Food & Bev | 75.85 | 185.28 | 4089.03 | Expedite supply and place the recommended replenishment order |
-| 2 | SKU10016 | Home Decor | 57.64 | 108.86 | 1664.50 | Expedite supply and place the recommended replenishment order |
-| 3 | SKU10037 | Kitchenware | 57.47 | 260.77 | 2182.63 | Expedite supply and place the recommended replenishment order |
-| 4 | SKU10120 | Beauty | 56.25 | 415.20 | 17496.64 | Expedite supply and place the recommended replenishment order |
-| 5 | SKU10144 | Food & Bev | 55.68 | 1203.77 | 20789.02 | Expedite supply and place the recommended replenishment order |
-| 6 | SKU10048 | Stationery | 53.84 | 73.47 | 739.84 | Expedite supply and place the recommended replenishment order |
-| 7 | SKU10118 | Electronics | 51.55 | 268.15 | 35065.34 | Expedite supply and place the recommended replenishment order |
-| 8 | SKU10008 | Home Decor | 51.43 | 98.48 | 542.62 | Expedite supply and place the recommended replenishment order |
-| 9 | SKU10022 | Home Decor | 50.69 | 125.42 | 2066.85 | Expedite supply and place the recommended replenishment order |
-| 13 | SKU10024 | Home Decor | 49.26 | 189.32 | 3714.49 | Review supplier timing and place or expedite the recommended order |
+| 1 | SKU10148 | Food & Bev | 74.28 | 170.44 | 3761.53 | Expedite supply and place the recommended replenishment order |
+| 2 | SKU10016 | Home Decor | 55.27 | 98.85 | 1511.44 | Expedite supply and place the recommended replenishment order |
+| 3 | SKU10037 | Kitchenware | 54.33 | 229.58 | 1921.61 | Expedite supply and place the recommended replenishment order |
+| 4 | SKU10022 | Home Decor | 50.54 | 124.64 | 2054.07 | Expedite supply and place the recommended replenishment order |
+| 6 | SKU10120 | Beauty | 49.95 | 322.32 | 13582.66 | Review supplier timing and place or expedite the recommended order |
+| 7 | SKU10048 | Stationery | 49.58 | 61.96 | 623.89 | Review supplier timing and place or expedite the recommended order |
+| 8 | SKU10036 | Kitchenware | 46.34 | 124.38 | 1606.94 | Review supplier timing and place or expedite the recommended order |
+| 9 | SKU10118 | Electronics | 46.04 | 215.01 | 28117.35 | Review supplier timing and place or expedite the recommended order |
+| 10 | SKU10008 | Home Decor | 46.03 | 79.31 | 436.99 | Review supplier timing and place or expedite the recommended order |
+| 11 | SKU10119 | Electronics | 44.87 | 244.13 | 46172.57 | Review supplier timing and place or expedite the recommended order |
 
 ## Top Overstock Priorities
 
 | Rank | SKU | Category | Overstock Risk | Excess Units | Excess Value | Action |
 |---:|---|---|---:|---:|---:|---|
-| 10 | SKU10097 | Apparel | 45.38 | 114.80 | 3592.07 | Pause replenishment; consider transfer, promotion or markdown |
-| 11 | SKU10088 | Apparel | 36.25 | 55.46 | 1152.99 | Pause replenishment; consider transfer, promotion or markdown |
-| 12 | SKU10098 | Apparel | 32.70 | 57.88 | 1489.25 | Pause replenishment; consider transfer, promotion or markdown |
-| 89 | SKU10132 | Beauty | 9.11 | 12.29 | 64.91 | Reduce or defer replenishment and monitor weekly demand |
-| 91 | SKU10005 | Home Decor | 8.66 | 10.05 | 47.93 | Reduce or defer replenishment and monitor weekly demand |
-| 85 | SKU10093 | Apparel | 0.00 | 0.00 | 0.00 | Review supplier timing and place or expedite the recommended order |
-| 90 | SKU10032 | Kitchenware | 0.00 | 0.00 | 0.00 | Review supplier timing and place or expedite the recommended order |
-| 108 | SKU10027 | Kitchenware | 0.00 | 0.00 | 0.00 | Reduce or defer replenishment and monitor weekly demand |
-| 109 | SKU10095 | Apparel | 0.00 | 0.00 | 0.00 | Reduce or defer replenishment and monitor weekly demand |
-| 110 | SKU10104 | Apparel | 0.00 | 0.00 | 0.00 | Reduce or defer replenishment and monitor weekly demand |
+| 5 | SKU10097 | Apparel | 49.36 | 124.88 | 3907.36 | Pause replenishment; consider transfer, promotion or markdown |
+| 68 | SKU10088 | Apparel | 14.41 | 22.05 | 458.46 | Reduce or defer replenishment and monitor weekly demand |
+| 77 | SKU10132 | Beauty | 7.47 | 10.09 | 53.27 | Reduce or defer replenishment and monitor weekly demand |
+| 79 | SKU10104 | Apparel | 6.90 | 7.80 | 298.51 | Reduce or defer replenishment and monitor weekly demand |
+| 82 | SKU10086 | Apparel | 5.04 | 14.42 | 283.41 | Reduce or defer replenishment and monitor weekly demand |
+| 90 | SKU10098 | Apparel | 0.63 | 1.12 | 28.75 | Reduce or defer replenishment and monitor weekly demand |
+| 93 | SKU10023 | Home Decor | 0.00 | 0.00 | 0.00 | Reduce or defer replenishment and monitor weekly demand |
+| 94 | SKU10067 | Toys | 0.00 | 0.00 | 0.00 | Reduce or defer replenishment and monitor weekly demand |
+| 95 | SKU10084 | Toys | 0.00 | 0.00 | 0.00 | Reduce or defer replenishment and monitor weekly demand |
 
-## Interpretation Limitation
+## Forecast Assumptions and Limitations
 
-The available prediction file contains historical test-period model outputs rather than a newly generated future forecast. The latest eight available model predictions are therefore averaged as an operational weekly-demand proxy for this risk-scoring demonstration.
-The scoring framework is production-ready in structure, but a live deployment should replace this proxy with the current 8-week future forecast on every scoring run.
+Risk scoring uses a newly generated recursive 8-week future forecast for every SKU. Each predicted week contributes to the next week's lag and rolling-demand features.
+No future promotion schedule was supplied, so future promotion flags are assumed to be zero. Latest known inventory inputs are carried forward for forecasting features, while risk calculations use the latest actual on-hand and on-order inventory position.
+Forecast uncertainty intervals and service-level optimisation are not yet included and remain production enhancements.
