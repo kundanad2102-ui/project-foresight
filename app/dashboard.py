@@ -1677,15 +1677,15 @@ with methodology_tab:
     )
 
     st.subheader(
-        "Important Limitation"
+        "Future Forecast Integration"
     )
 
     st.warning(
-        "The current risk-scoring demonstration uses the latest "
-        "available historical test-period model predictions as an "
-        "operational weekly-demand proxy. A deployed production "
-        "workflow should replace this proxy with a newly generated "
-        "8-week future forecast on every scoring run."
+        "The current risk-scoring workflow uses a newly generated 8-week"
+        "future forecast for every SKU. These forecasts are combined with"
+        "on-hand inventory, on-order inventory, lead time, demand variability"
+        "and safety stock to calculate stockout risk, overstock risk and"
+        "replenishment recommendations."
     )
 
     st.subheader(
@@ -1693,43 +1693,33 @@ with methodology_tab:
     )
 
     source_files = pd.DataFrame(
+    [
         {
-            "Purpose": [
-                "SKU risk scores",
-                "Forecast history",
-                "Final-test model metrics",
-                "Rolling-CV metrics",
-                "Executive risk summary",
-            ],
-            "File": [
-                str(
-                    RISK_SCORES_FILE.relative_to(
-                        PROJECT_ROOT
-                    )
-                ),
-                str(
-                    MODEL_PREDICTIONS_FILE.relative_to(
-                        PROJECT_ROOT
-                    )
-                ),
-                str(
-                    MODEL_TEST_METRICS_FILE.relative_to(
-                        PROJECT_ROOT
-                    )
-                ),
-                str(
-                    ROLLING_CV_SUMMARY_FILE.relative_to(
-                        PROJECT_ROOT
-                    )
-                ),
-                str(
-                    RISK_SUMMARY_FILE.relative_to(
-                        PROJECT_ROOT
-                    )
-                ),
-            ],
-        }
-    )
+            "Purpose": "SKU risk scores",
+            "File": "data/processed/inventory_risk_scores.csv",
+        },
+        {
+            "Purpose": "Future 8-week forecast",
+            "File": "data/processed/future_8_week_forecast.csv",
+        },
+        {
+            "Purpose": "Forecast history",
+            "File": "data/processed/model_predictions.csv",
+        },
+        {
+            "Purpose": "Final-test model metrics",
+            "File": "reports/model_test_metrics.csv",
+        },
+        {
+            "Purpose": "Rolling-CV metrics",
+            "File": "reports/rolling_origin_cv_summary.csv",
+        },
+        {
+            "Purpose": "Executive risk summary",
+            "File": "reports/inventory_risk_summary.csv",
+        },
+    ]
+)
 
     st.dataframe(
         source_files,
